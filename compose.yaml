@@ -1,0 +1,27 @@
+services:
+  minio:
+    image: quay.io/minio/minio
+    ports:
+      - '9000:9000'
+      - '9090:9090'
+    volumes:
+      - minio-data:/data
+    command: server /data --console-address :9090
+    environment:
+      MINIO_ROOT_USER: 'ssss'
+      MINIO_ROOT_PASSWORD: 'pass_ssss'
+  postgres:
+    image: 'postgres:16'
+    environment:
+      - 'POSTGRES_DB=cloud_file_storage'
+      - 'POSTGRES_USER=ssss'
+      - 'POSTGRES_PASSWORD=ssss'
+    ports:
+      - '5433:5432'
+  redis:
+    image: 'redis:7.4.2'
+    ports:
+      - '6379'
+    command: ["redis-server", "--notify-keyspace-events", "Egx"]
+volumes:
+  minio-data:
