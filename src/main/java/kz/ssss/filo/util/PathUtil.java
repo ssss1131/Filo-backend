@@ -21,7 +21,7 @@ public class PathUtil {
         return fullPath.startsWith(prefix) ? fullPath.substring(prefix.length()) : fullPath;
     }
 
-    public static String removePathFromName(String objectName, boolean isDir) {
+    public static String removePathFromName(String objectName) {
         String[] dividedByFolderNames = objectName.split(FOLDER_DELIMITER);
         return dividedByFolderNames[dividedByFolderNames.length - 1];
     }

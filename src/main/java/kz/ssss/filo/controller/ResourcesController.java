@@ -1,7 +1,7 @@
 package kz.ssss.filo.controller;
 
-import kz.ssss.filo.dto.request.CreateFolderRequestDto;
-import kz.ssss.filo.dto.request.UploadFileRequestDto;
+import kz.ssss.filo.dto.request.CreateFolderRequest;
+import kz.ssss.filo.dto.request.UploadFileRequest;
 import kz.ssss.filo.service.FileService;
 import kz.ssss.filo.service.FolderService;
 import lombok.RequiredArgsConstructor;
@@ -20,7 +20,7 @@ public class ResourcesController {
     private final FolderService folderService;
 
     @PostMapping("/upload")
-    public String uploadFile(@ModelAttribute UploadFileRequestDto fileRequestDto,
+    public String uploadFile(@ModelAttribute UploadFileRequest fileRequestDto,
                              RedirectAttributes redirectAttributes) {
         try {
             fileRequestDto.getFiles().forEach(file ->
@@ -35,15 +35,15 @@ public class ResourcesController {
 
 
     @PostMapping("/create-folder")
-    public String createFolder(@ModelAttribute CreateFolderRequestDto createFolderRequestDto,
+    public String createFolder(@ModelAttribute CreateFolderRequest createFolderRequest,
                                RedirectAttributes redirectAttributes) {
         try {
-            folderService.createFolder(createFolderRequestDto);
+            folderService.createFolder(createFolderRequest);
             redirectAttributes.addFlashAttribute("successMessage", "Folder created successfully!");
         } catch (Exception e){
             redirectAttributes.addFlashAttribute("errorMessage", "Error creating folder: " + e.getMessage());
         }
-        return "redirect:/?path=" + createFolderRequestDto.getPath();
+        return "redirect:/?path=" + createFolderRequest.getPath();
     }
 
 

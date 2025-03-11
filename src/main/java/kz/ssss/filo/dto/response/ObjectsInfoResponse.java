@@ -6,7 +6,7 @@ import lombok.Value;
 
 @AllArgsConstructor
 @Value
-public class ObjectsInfoDto {
+public class ObjectsInfoResponse {
 
     String name;
 

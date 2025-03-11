@@ -7,10 +7,14 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import static kz.ssss.filo.util.Constant.*;
 
@@ -20,26 +24,35 @@ import static kz.ssss.filo.util.Constant.*;
 public class SecurityConfig {
 
 
-    private final AuthenticationFailureHandler customAuthenticationFailureHandler;
+//    private final AuthenticationFailureHandler customAuthenticationFailureHandler;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
+                .csrf(AbstractHttpConfigurer::disable)
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers(HOME_URL, SEARCH_URL).authenticated()
-                        .anyRequest().permitAll())
-                .formLogin(form -> form
-                        .loginPage(LOGIN_PAGE)
-                        .defaultSuccessUrl(HOME_URL)
-                        .failureHandler(customAuthenticationFailureHandler)
-                        .permitAll())
+                        .requestMatchers(BASE_AUTH_URL + LOGIN_ENDPOINT, BASE_AUTH_URL + REGISTER_ENDPOINT).permitAll()
+                        .anyRequest().authenticated())
                 .logout(logout -> logout
                         .logoutUrl(FULL_LOGOUT_URL)
-                        .logoutSuccessUrl(FULL_LOGIN_URL)
+                        .logoutSuccessHandler(((req, resp, auth) -> resp.setStatus(204)))
                         .deleteCookies(SESSION_COOKIE_ATTRIBUTE)
                         .invalidateHttpSession(true)
                 ).build();
     }
+
+    private UrlBasedCorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.addAllowedOrigin("http://localhost:4200");
+        configuration.addAllowedMethod("*");
+        configuration.addAllowedHeader("*");
+        configuration.setAllowCredentials(true);
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
+    }
+
 
     @Bean
     public PasswordEncoder passwordEncoder() {

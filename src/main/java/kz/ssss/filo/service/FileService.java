@@ -1,7 +1,7 @@
 package kz.ssss.filo.service;
 
 import io.minio.messages.Item;
-import kz.ssss.filo.dto.response.ObjectsInfoDto;
+import kz.ssss.filo.dto.response.ObjectsInfoResponse;
 import kz.ssss.filo.exception.DuplicateResourceException;
 import kz.ssss.filo.exception.StorageOperationException;
 import kz.ssss.filo.mapper.ObjectsInfoMapper;
@@ -17,6 +17,7 @@ import java.io.IOException;
 import java.util.List;
 
 import static java.util.stream.Collectors.toList;
+import static kz.ssss.filo.util.Constant.PLACEHOLDER;
 
 @Slf4j
 @Service
@@ -30,11 +31,12 @@ public class FileService {
     @Value("${minio.bucket-name}")
     private String bucketName;
 
-    public List<ObjectsInfoDto> getAllObjects(Long userId, String path) {
+    public List<ObjectsInfoResponse> getAllObjects(Long userId, String path) {
         String fullPath = PathUtil.getFullPath(userId, path);
         List<Item> items = minioRepository.listObjects(bucketName, fullPath);
         return items.stream()
                 .map(item -> mapper.toDto(item, userId))
+                .filter(item -> !PathUtil.removePathFromName(item.getName()).equals(PLACEHOLDER))
                 .collect(toList());
     }
 

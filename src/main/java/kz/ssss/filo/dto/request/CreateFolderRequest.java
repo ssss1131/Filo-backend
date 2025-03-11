@@ -3,7 +3,7 @@ package kz.ssss.filo.dto.request;
 import lombok.Value;
 
 @Value
-public class CreateFolderRequestDto {
+public class CreateFolderRequest {
 
     private Long userId;
     private String path;
