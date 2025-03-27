@@ -27,7 +27,7 @@ public class HomeController {
                                @AuthenticationPrincipal UserPrincipal userDetails,
                                Model model) {
         model.addAttribute("currentPath", path);
-        model.addAttribute("files", fileService.getAllObjects(userDetails.getId(), path));
+        model.addAttribute("files", fileService.getObjectInfoInFolder(userDetails.getId(), path));
         return "main_page";
     }
 

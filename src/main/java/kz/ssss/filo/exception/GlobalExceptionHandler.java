@@ -49,6 +49,12 @@ public class GlobalExceptionHandler {
         return new ErrorResponse("Invalid username or password");
     }
 
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    @ExceptionHandler(StorageOperationException.class)
+    @ResponseBody
+    public ErrorResponse handleStorageOperationException(StorageOperationException e){
+        return new ErrorResponse(e.getMessage());
+    }
 
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ExceptionHandler(Exception.class)

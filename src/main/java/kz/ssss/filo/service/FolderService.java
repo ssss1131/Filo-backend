@@ -1,7 +1,9 @@
 package kz.ssss.filo.service;
 
-import kz.ssss.filo.dto.request.CreateFolderRequest;
+import io.minio.messages.Item;
 import kz.ssss.filo.exception.DuplicateResourceException;
+import kz.ssss.filo.exception.InvalidPathException;
+import kz.ssss.filo.exception.StorageOperationException;
 import kz.ssss.filo.repository.MinioRepository;
 import kz.ssss.filo.util.PathUtil;
 import lombok.RequiredArgsConstructor;
@@ -10,9 +12,16 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.List;
+import java.util.Objects;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 import static kz.ssss.filo.util.Constant.PLACEHOLDER;
-import static kz.ssss.filo.util.PathUtil.FOLDER_DELIMITER;
+import static kz.ssss.filo.util.PathUtil.getPath;
+import static kz.ssss.filo.util.PathUtil.getRelativePath;
 
 @Slf4j
 @Service
@@ -24,9 +33,14 @@ public class FolderService {
     @Value("${minio.bucket-name}")
     private String bucketName;
 
-    public void createFolder(Long userId, String folderName, String path) {
+    public void createFolder(long userId, String path) {
         initializeBaseFolder(userId);
-        String fullPath = PathUtil.getFullPath(userId, path + folderName + FOLDER_DELIMITER);
+
+        if (!PathUtil.isCorrectPath(path)) {
+            throw new InvalidPathException("Path is empty or incorrect");
+        }
+
+        String fullPath = PathUtil.getFullPath(userId, path);
         String placeholderPath = fullPath + PLACEHOLDER;
 
         if (minioRepository.isObjectExists(bucketName, fullPath, false)) {
@@ -37,11 +51,7 @@ public class FolderService {
         log.info("Created new folder with path {}", fullPath);
     }
 
-    public void createFolder(CreateFolderRequest dto) {
-        createFolder(dto.getUserId(), dto.getName(), dto.getPath());
-    }
-
-    public void initializeBaseFolder(Long userId) {
+    public void initializeBaseFolder(long userId) {
         String basePath = PathUtil.getFullPath(userId, "");
         String placeholderPath = basePath + PLACEHOLDER;
         if (!minioRepository.isObjectExists(bucketName, basePath, false)) {
@@ -50,4 +60,31 @@ public class FolderService {
         }
     }
 
+    public void downloadFolder(long userId, String path, OutputStream outputStream) {
+        String fullPath = PathUtil.getFullPath(userId, path);
+        try (ZipOutputStream zos = new ZipOutputStream(outputStream)) {
+            List<Item> items = minioRepository.listObjects(bucketName, fullPath, true);
+            byte[] buffer = new byte[4096];
+            for (Item item : items) {
+                String fileName = item.objectName();
+                String relativePath = getRelativePath(fullPath, fileName);
+                if(Objects.equals(PathUtil.getName(relativePath), PLACEHOLDER)){
+                    relativePath = getPath(relativePath);
+                }
+                try (InputStream is = minioRepository.download(bucketName, fileName)) {
+                    ZipEntry zipEntry = new ZipEntry(relativePath);
+                    zos.putNextEntry(zipEntry);
+                    int bytesRead;
+                    while ((bytesRead = is.read(buffer)) > 0){
+                        zos.write(buffer, 0, bytesRead);
+                    }
+                    zos.closeEntry();
+                }
+            }
+        }catch (Exception e){
+            log.error("Occurred error while downloading folder with path {}", fullPath);
+            throw new StorageOperationException("Failed to create ZIP archive", e);
+        }
+
+    }
 }
