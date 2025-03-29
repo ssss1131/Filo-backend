@@ -1,11 +1,14 @@
 package kz.ssss.filo.repository;
 
 import io.minio.*;
+import io.minio.messages.DeleteError;
+import io.minio.messages.DeleteObject;
 import io.minio.messages.Item;
-import kz.ssss.filo.exception.StorageOperationException;
+import kz.ssss.filo.exception.minio.StorageOperationException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
+import org.springframework.web.servlet.view.InternalResourceViewResolver;
 
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -17,6 +20,7 @@ import java.util.List;
 public class MinioRepository {
 
     private final MinioClient minioClient;
+    private final InternalResourceViewResolver internalResourceViewResolver;
 
 
     public void save(String bucketName, String path, InputStream stream, long objectSize, String contentType) {
@@ -85,6 +89,22 @@ public class MinioRepository {
 
         } catch (Exception e) {
             throw new StorageOperationException("Failed to list objects", e);
+        }
+    }
+
+    public void removeObjects(String bucketName, List<DeleteObject> objects) {
+        try {
+            Iterable<Result<DeleteError>> results = minioClient.removeObjects(RemoveObjectsArgs.builder()
+                    .bucket(bucketName)
+                    .objects(objects)
+                    .build());
+            for (Result<DeleteError> result : results) {
+                DeleteError error = result.get();
+                log.error("Error in deleting object {}; {}", error.objectName(), error.message());
+            }
+        } catch (Exception e){
+            log.error("Exception while deleting elements", e);
+            throw new StorageOperationException("Exception while deleting elements", e);
         }
     }
 }
