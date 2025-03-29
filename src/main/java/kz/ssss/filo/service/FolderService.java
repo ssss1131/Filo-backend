@@ -1,9 +1,9 @@
 package kz.ssss.filo.service;
 
 import io.minio.messages.Item;
-import kz.ssss.filo.exception.DuplicateResourceException;
-import kz.ssss.filo.exception.InvalidPathException;
-import kz.ssss.filo.exception.StorageOperationException;
+import kz.ssss.filo.exception.minio.DuplicateResourceException;
+import kz.ssss.filo.exception.minio.InvalidPathException;
+import kz.ssss.filo.exception.minio.StorageOperationException;
 import kz.ssss.filo.repository.MinioRepository;
 import kz.ssss.filo.util.PathUtil;
 import lombok.RequiredArgsConstructor;

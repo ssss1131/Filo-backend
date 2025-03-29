@@ -1,6 +1,5 @@
-package kz.ssss.filo.service;
+package kz.ssss.filo.config;
 
-import kz.ssss.filo.model.UserPrincipal;
 import kz.ssss.filo.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;

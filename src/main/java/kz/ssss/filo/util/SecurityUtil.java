@@ -1,6 +1,6 @@
 package kz.ssss.filo.util;
 
-import kz.ssss.filo.model.UserPrincipal;
+import kz.ssss.filo.config.UserPrincipal;
 import lombok.experimental.UtilityClass;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;

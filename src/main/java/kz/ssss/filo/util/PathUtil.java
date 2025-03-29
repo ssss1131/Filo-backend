@@ -1,5 +1,8 @@
 package kz.ssss.filo.util;
 
+import lombok.experimental.UtilityClass;
+
+@UtilityClass
 public class PathUtil {
 
     public static final String FOLDER_DELIMITER = "/";
@@ -33,7 +36,7 @@ public class PathUtil {
             return false;
         }
 
-        String pattern = "^[a-zA-Z0-9_/]+$";
+        String pattern = "^[\\p{L}\\p{N}_\\-. ]+(\\/[\\p{L}\\p{N}_\\-. ]+)*\\/?$";
         return path.matches(pattern);
     }
 

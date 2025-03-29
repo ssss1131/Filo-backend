@@ -2,6 +2,7 @@ package kz.ssss.filo.exception;
 
 import kz.ssss.filo.dto.response.ErrorResponse;
 import kz.ssss.filo.dto.response.ValidationErrorResponse;
+import kz.ssss.filo.exception.minio.StorageOperationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -54,6 +56,13 @@ public class GlobalExceptionHandler {
     @ResponseBody
     public ErrorResponse handleStorageOperationException(StorageOperationException e){
         return new ErrorResponse(e.getMessage());
+    }
+
+    @ResponseStatus(HttpStatus.PAYLOAD_TOO_LARGE)
+    @ExceptionHandler(MaxUploadSizeExceededException.class)
+    @ResponseBody
+    public ErrorResponse handleMaxUploadSizeExceededException(){
+        return new ErrorResponse("File size exceeds the maximum allowed limit of 100MB.");
     }
 
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)

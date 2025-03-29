@@ -1,4 +1,4 @@
-package kz.ssss.filo.exception;
+package kz.ssss.filo.exception.minio;
 
 public class StorageOperationException extends RuntimeException {
 

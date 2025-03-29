@@ -1,10 +1,9 @@
 package kz.ssss.filo.service;
 
-
 import io.minio.BucketExistsArgs;
 import io.minio.MakeBucketArgs;
 import io.minio.MinioClient;
-import kz.ssss.filo.exception.StorageOperationException;
+import kz.ssss.filo.exception.minio.StorageOperationException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
