@@ -16,13 +16,13 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.stereotype.Service;
 
-import java.net.http.HttpRequest;
-
 @Service
 @RequiredArgsConstructor
 public class UserService {
 
     private final UserRepository userRepository;
+    private final FolderService folderService;
+
     private final PasswordEncoder encoder;
     private final AuthenticationManager authenticationManager;
 
@@ -42,6 +42,7 @@ public class UserService {
 
         User user = new User(username, encoder.encode(rawPassword));
         userRepository.save(user);
+        folderService.initializeBaseFolder(user.getId());
     }
 
     public boolean isExistingUsername(String username) {
