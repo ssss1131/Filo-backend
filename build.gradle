@@ -27,7 +27,6 @@ dependencies {
 	implementation 'org.springframework.session:spring-session-data-redis'
 	implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6'
 	implementation 'org.flywaydb:flyway-core'
-	implementation 'org.springframework.session:spring-session-data-redis'
 	implementation 'io.minio:minio:8.5.16'
 	implementation group: 'org.mapstruct', name: 'mapstruct', version: '1.6.3'
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
