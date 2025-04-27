@@ -4,6 +4,7 @@ import kz.ssss.filo.dto.response.ErrorResponse;
 import kz.ssss.filo.dto.response.ValidationErrorResponse;
 import kz.ssss.filo.exception.minio.StorageOperationException;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -21,6 +22,9 @@ import java.util.Map;
 @Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+
+    @Value("${spring.servlet.multipart.max-file-size}")
+    private String maxSize;
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -62,7 +66,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(MaxUploadSizeExceededException.class)
     @ResponseBody
     public ErrorResponse handleMaxUploadSizeExceededException(){
-        return new ErrorResponse("File size exceeds the maximum allowed limit of 100MB.");
+        return new ErrorResponse("File size exceeds the maximum allowed limit of " + maxSize);
     }
 
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)

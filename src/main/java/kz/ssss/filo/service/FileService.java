@@ -32,11 +32,14 @@ public class FileService {
         if (!PathUtil.isCorrectPath(path)) {
             throw new InvalidPathException("Path is empty or incorrect");
         }
+
         folderService.initializeBaseFolder(userId);
+
         String fullPath = PathUtil.getFullPath(userId, path + file.getOriginalFilename());
         if (minioRepository.isObjectExists(bucketName, fullPath, false)) {
             throw new DuplicateResourceException("file with such name already exists!");
         }
+
         try {
             minioRepository.save(bucketName, fullPath, file.getInputStream(), file.getSize(), file.getContentType());
             log.info("Upload new file with path: {}", fullPath);
