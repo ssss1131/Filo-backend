@@ -1,6 +1,8 @@
 package kz.ssss.filo.service;
 
 import io.minio.messages.Item;
+import kz.ssss.filo.dto.response.FolderInfoResponse;
+import kz.ssss.filo.dto.response.ObjectsInfoResponse;
 import kz.ssss.filo.exception.minio.DuplicateResourceException;
 import kz.ssss.filo.exception.minio.InvalidPathException;
 import kz.ssss.filo.exception.minio.StorageOperationException;
@@ -16,6 +18,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -29,6 +32,7 @@ import static kz.ssss.filo.util.PathUtil.getRelativePath;
 public class FolderService {
 
     private final MinioRepository minioRepository;
+    private final ResourceService resourceService;
 
     @Value("${minio.bucket-name}")
     private String bucketName;
@@ -85,6 +89,15 @@ public class FolderService {
             log.error("Occurred error while downloading folder with path {}", fullPath);
             throw new StorageOperationException("Failed to create ZIP archive", e);
         }
-
     }
+
+    public List<FolderInfoResponse> getAvailableDestinationFolders(long userId, String excludedFolderPath) {
+        List<ObjectsInfoResponse> allFolders = resourceService.getResources(userId, "", true, true);
+        return allFolders.stream()
+                .map(folder -> new FolderInfoResponse(PathUtil.getPath(folder.path())))
+                .filter(folder -> PathUtil.isValidDestinationFolder(folder.path(), excludedFolderPath))
+                .distinct()
+                .collect(Collectors.toList());
+    }
+
 }
