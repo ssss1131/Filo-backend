@@ -24,42 +24,59 @@ import static kz.ssss.filo.util.Constant.PLACEHOLDER;
 public class ResourceService {
 
     private final MinioRepository minioRepository;
-    private final FolderService folderService;
     private final ObjectsInfoMapper mapper;
 
     @Value("${minio.bucket-name}")
     private String bucketName;
 
-    public List<ObjectsInfoResponse> getResources(long userId, String path) {
+    public List<ObjectsInfoResponse> getResources(long userId, String path, boolean isRecursive, boolean havePlaceholders){
         if (!PathUtil.isCorrectPath(path)) {
+            log.info("Invalid path is {}", path);
             throw new InvalidPathException("Path is empty or incorrect");
         }
         String fullPath = PathUtil.getFullPath(userId, path);
-        List<Item> items = minioRepository.listObjects(bucketName, fullPath, false);
+        List<Item> items = minioRepository.listObjects(bucketName, fullPath, isRecursive);
         if (items.isEmpty()) {
             log.info("The resource on the {} was not found", path);
             throw new ResourceNotFoundException("The resource on the specified path was not found");
         }
         return items.stream()
                 .map(item -> mapper.toDto(item, userId))
-                .filter(item -> !PathUtil.getName(item.name()).equals(PLACEHOLDER))
+                .filter(item -> havePlaceholders || !PathUtil.getName(item.name()).equals(PLACEHOLDER))
                 .collect(toList());
     }
 
-
-    public List<ObjectsInfoResponse> move(long userId, String from, String to){
-        return null;
+    public List<ObjectsInfoResponse> getResourcesInFolder(long userId, String path){
+        return getResources(userId, path, false, false);
     }
+
+
+
+    public List<ObjectsInfoResponse> move(long userId, String from, String to) {
+        String fullFromPath = PathUtil.getFullPath(userId, from);
+        String fullToPath = PathUtil.getFullPath(userId, to);
+
+        List<Item> items = minioRepository.listObjects(bucketName, fullFromPath, true);
+        for (Item item : items) {
+            String oldKey = item.objectName();
+            String newKey = fullToPath + oldKey.substring(fullFromPath.length());
+            minioRepository.copyObject(bucketName, oldKey, newKey);
+        }
+
+        delete(userId, from);
+        return getResourcesInFolder(userId, PathUtil.getPath(to));
+    }
+
 
     public void delete(long userId, String path){
         String fullPath = PathUtil.getFullPath(userId, path);
         List<DeleteObject> objects = minioRepository.listObjects(bucketName, fullPath, true).stream()
                 .map(resource -> new DeleteObject(resource.objectName()))
                 .toList();
+
         minioRepository.removeObjects(bucketName, objects);
         log.info("Deleted element with path {}", fullPath);
     }
-
 
 
 }

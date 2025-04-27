@@ -1,6 +1,7 @@
 package kz.ssss.filo.repository;
 
 import io.minio.*;
+import io.minio.errors.*;
 import io.minio.messages.DeleteError;
 import io.minio.messages.DeleteObject;
 import io.minio.messages.Item;
@@ -10,7 +11,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
 
+import java.io.IOException;
 import java.io.InputStream;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,24 +27,24 @@ public class MinioRepository {
     private final InternalResourceViewResolver internalResourceViewResolver;
 
 
-    public void save(String bucketName, String path, InputStream stream, long objectSize, String contentType) {
+    public void save(String bucket, String path, InputStream stream, long objectSize, String contentType) {
         try {
             minioClient.putObject(PutObjectArgs.builder()
-                    .bucket(bucketName)
+                    .bucket(bucket)
                     .object(path)
                     .stream(stream, objectSize, -1)
                     .contentType(contentType)
                     .build());
         } catch (Exception e) {
-            log.error("Failed to save file with path {} in bucket {}", path, bucketName, e);
+            log.error("Failed to save file with path {} in bucket {}", path, bucket, e);
             throw new StorageOperationException("Failed to save file in path: " + path, e);
         }
     }
 
-    public InputStream download(String bucketName, String path) {
+    public InputStream download(String bucket, String path) {
         try {
             return minioClient.getObject(GetObjectArgs.builder()
-                    .bucket(bucketName)
+                    .bucket(bucket)
                     .object(path)
                     .build());
         } catch (Exception e) {
@@ -48,22 +52,22 @@ public class MinioRepository {
         }
     }
 
-    public void createFolder(String bucketName, String path, InputStream stream, long objectSize) {
+    public void createFolder(String bucket, String path, InputStream stream, long objectSize) {
         try {
             minioClient.putObject(PutObjectArgs.builder()
-                    .bucket(bucketName)
+                    .bucket(bucket)
                     .object(path)
                     .stream(stream, objectSize, -1)
                     .build());
         } catch (Exception e) {
-            log.error("Failed to create folder in path '{}' in bucket '{}'", path, bucketName, e);
+            log.error("Failed to create folder in path '{}'", path, e);
             throw new StorageOperationException("Failed to create folder in path: " + path, e);
         }
     }
 
-    public boolean isObjectExists(String bucketName, String prefix, boolean isRecursively) {
+    public boolean isObjectExists(String bucket, String prefix, boolean isRecursively) {
         Iterable<Result<Item>> fileExists = minioClient.listObjects(ListObjectsArgs.builder()
-                .bucket(bucketName)
+                .bucket(bucket)
                 .prefix(prefix)
                 .recursive(isRecursively)
                 .build());
@@ -71,11 +75,11 @@ public class MinioRepository {
     }
 
 
-    public List<Item> listObjects(String bucketName, String prefix, boolean isRecursive) {
+    public List<Item> listObjects(String bucket, String prefix, boolean isRecursive) {
         try {
             Iterable<Result<Item>> results = minioClient.listObjects(
                     ListObjectsArgs.builder()
-                            .bucket(bucketName)
+                            .bucket(bucket)
                             .prefix(prefix)
                             .recursive(isRecursive)
                             .build()
@@ -92,19 +96,35 @@ public class MinioRepository {
         }
     }
 
-    public void removeObjects(String bucketName, List<DeleteObject> objects) {
+    public void removeObjects(String bucket, List<DeleteObject> objects) {
         try {
             Iterable<Result<DeleteError>> results = minioClient.removeObjects(RemoveObjectsArgs.builder()
-                    .bucket(bucketName)
+                    .bucket(bucket)
                     .objects(objects)
                     .build());
             for (Result<DeleteError> result : results) {
                 DeleteError error = result.get();
                 log.error("Error in deleting object {}; {}", error.objectName(), error.message());
             }
-        } catch (Exception e){
+        } catch (Exception e) {
             log.error("Exception while deleting elements", e);
             throw new StorageOperationException("Exception while deleting elements", e);
+        }
+    }
+
+    public void copyObject(String bucket, String from, String to) {
+        try {
+            minioClient.copyObject(CopyObjectArgs.builder()
+                    .bucket(bucket)
+                    .object(to)
+                    .source(CopySource.builder()
+                            .bucket(bucket)
+                            .object(from)
+                            .build())
+                    .build());
+        } catch (Exception e){
+            log.error("Exception while copying from {} elements to {}", from, to, e);
+            throw new StorageOperationException("Exception while copying elements", e);
         }
     }
 }

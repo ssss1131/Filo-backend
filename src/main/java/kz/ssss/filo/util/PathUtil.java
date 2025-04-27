@@ -43,11 +43,14 @@ public class PathUtil {
 
     public static String getPath(String path) {
         int index = path.lastIndexOf(FOLDER_DELIMITER);
+        if(index == -1){
+            return FOLDER_DELIMITER;
+        }
         return path.substring(0, index) + FOLDER_DELIMITER;
     }
 
     public static boolean isFile(String path) {
-        return !path.endsWith(FOLDER_DELIMITER);
+        return path!=null && !path.endsWith(FOLDER_DELIMITER);
     }
 
     public static String getRelativePath(String prefix, String path) {
@@ -57,4 +60,28 @@ public class PathUtil {
         }
         return path;
     }
+
+    public static boolean isValidDestinationFolder(String candidatePath, String excludedPath) {
+        if (candidatePath.isEmpty() || excludedPath.isEmpty()) {
+            return false;
+        }
+        String parentPath = getParentPath(excludedPath);
+
+        return !candidatePath.equals(parentPath)
+               && !candidatePath.equals(excludedPath)
+               && !candidatePath.startsWith(excludedPath);
+    }
+
+    public static String getParentPath(String path) {
+        if (path.isEmpty() || path.equals(FOLDER_DELIMITER)) {
+            return "";
+        }
+        String trimmed = path.substring(0, path.length() - 1);
+        int lastSlash = trimmed.lastIndexOf(FOLDER_DELIMITER);
+        if (lastSlash == -1) {
+            return "/";
+        }
+        return trimmed.substring(0, lastSlash + 1);
+    }
+
 }

@@ -1,5 +1,6 @@
 package kz.ssss.filo.controller;
 
+import kz.ssss.filo.dto.response.ObjectsInfoResponse;
 import kz.ssss.filo.service.FileService;
 import kz.ssss.filo.service.FolderService;
 import kz.ssss.filo.service.ResourceService;
@@ -33,7 +34,7 @@ public class ResourceController {
 
     @GetMapping
     public ResponseEntity<?> getFiles(@RequestParam(name = "path", required = false, defaultValue = "") String path) {
-        return ResponseEntity.ok(resourceService.getResources(getAuthenticatedUserId(), path));
+        return ResponseEntity.ok(resourceService.getResourcesInFolder(getAuthenticatedUserId(), path));
     }
 
     @PostMapping
@@ -44,12 +45,20 @@ public class ResourceController {
         );
         return ResponseEntity
                 .status(CREATED)
-                .body(resourceService.getResources(getAuthenticatedUserId(), path));
+                .body(resourceService.getResourcesInFolder(getAuthenticatedUserId(), path));
+    }
+
+    @DeleteMapping
+    public ResponseEntity<?> delete(@RequestParam(name = "path") String path) {
+        resourceService.delete(getAuthenticatedUserId(), path);
+        return ResponseEntity
+                .status(NO_CONTENT)
+                .build();
     }
 
     @GetMapping("/download")
     public ResponseEntity<StreamingResponseBody> download(
-            @RequestParam(name = "path", required = false, defaultValue = "") String path) throws Exception {
+            @RequestParam(name = "path", required = false, defaultValue = "") String path) {
 
         if (PathUtil.isFile(path)) {
             Resource resource = fileService.downloadFile(getAuthenticatedUserId(), path);
@@ -85,13 +94,11 @@ public class ResourceController {
         }
     }
 
-    @DeleteMapping
-    public ResponseEntity<?> delete(@RequestParam(name = "path") String path) {
-        resourceService.delete(getAuthenticatedUserId(), path);
-        return ResponseEntity
-                .status(NO_CONTENT)
-                .build();
+    @GetMapping("/move")
+    public ResponseEntity<?> move(@RequestParam(name = "from") String from, @RequestParam(name = "to") String to){
+        List<ObjectsInfoResponse> resources = resourceService.move(getAuthenticatedUserId(), from, to);
+        return ResponseEntity.ok()
+                .body(resources);
     }
-
 
 }
