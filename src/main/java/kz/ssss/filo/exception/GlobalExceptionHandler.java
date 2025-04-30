@@ -2,6 +2,9 @@ package kz.ssss.filo.exception;
 
 import kz.ssss.filo.dto.response.ErrorResponse;
 import kz.ssss.filo.dto.response.ValidationErrorResponse;
+import kz.ssss.filo.exception.auth.UniqueUsernameException;
+import kz.ssss.filo.exception.minio.DuplicateResourceException;
+import kz.ssss.filo.exception.minio.ResourceNotFoundException;
 import kz.ssss.filo.exception.minio.StorageOperationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -67,6 +70,20 @@ public class GlobalExceptionHandler {
     @ResponseBody
     public ErrorResponse handleMaxUploadSizeExceededException(){
         return new ErrorResponse("File size exceeds the maximum allowed limit of " + maxSize);
+    }
+
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    @ExceptionHandler(ResourceNotFoundException.class)
+    @ResponseBody
+    public ErrorResponse handleResourceNotFoundException(ResourceNotFoundException e){
+        return new ErrorResponse(e.getMessage());
+    }
+
+    @ResponseStatus(HttpStatus.CONFLICT)
+    @ExceptionHandler(DuplicateResourceException.class)
+    @ResponseBody
+    public ErrorResponse handleDuplicateResourceException(DuplicateResourceException e){
+        return new ErrorResponse(e.getMessage());
     }
 
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
