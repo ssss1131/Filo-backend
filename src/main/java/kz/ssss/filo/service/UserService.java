@@ -4,7 +4,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import kz.ssss.filo.dto.request.SignInRequest;
 import kz.ssss.filo.dto.response.UserInfoResponse;
-import kz.ssss.filo.exception.UniqueUsernameException;
+import kz.ssss.filo.exception.auth.UniqueUsernameException;
 import kz.ssss.filo.model.User;
 import kz.ssss.filo.repository.UserRepository;
 import lombok.RequiredArgsConstructor;

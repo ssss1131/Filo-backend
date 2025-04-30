@@ -1,4 +1,4 @@
-package kz.ssss.filo.exception;
+package kz.ssss.filo.exception.auth;
 
 public class UniqueUsernameException extends RuntimeException {
 

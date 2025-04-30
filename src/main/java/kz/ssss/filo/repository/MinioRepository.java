@@ -1,7 +1,6 @@
 package kz.ssss.filo.repository;
 
 import io.minio.*;
-import io.minio.errors.*;
 import io.minio.messages.DeleteError;
 import io.minio.messages.DeleteObject;
 import io.minio.messages.Item;
@@ -9,12 +8,8 @@ import kz.ssss.filo.exception.minio.StorageOperationException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
-import org.springframework.web.servlet.view.InternalResourceViewResolver;
 
-import java.io.IOException;
 import java.io.InputStream;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,7 +19,6 @@ import java.util.List;
 public class MinioRepository {
 
     private final MinioClient minioClient;
-    private final InternalResourceViewResolver internalResourceViewResolver;
 
 
     public void save(String bucket, String path, InputStream stream, long objectSize, String contentType) {

@@ -2,7 +2,6 @@ package kz.ssss.filo.controller;
 
 import kz.ssss.filo.dto.response.CreateDirectoryResponse;
 import kz.ssss.filo.dto.response.FolderInfoResponse;
-import kz.ssss.filo.dto.response.ObjectsInfoResponse;
 import kz.ssss.filo.service.FolderService;
 import kz.ssss.filo.util.PathUtil;
 import lombok.RequiredArgsConstructor;
