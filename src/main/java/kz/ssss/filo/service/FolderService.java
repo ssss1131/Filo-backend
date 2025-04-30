@@ -45,21 +45,19 @@ public class FolderService {
         }
 
         String fullPath = PathUtil.getFullPath(userId, path);
-        String placeholderPath = fullPath + PLACEHOLDER;
 
         if (minioRepository.isObjectExists(bucketName, fullPath, false)) {
-            throw new DuplicateResourceException("Folder or file with such name already exists!");
+            throw new DuplicateResourceException("folder or file with name %s already exists!".formatted(PathUtil.getName(fullPath)));
         }
 
-        minioRepository.createFolder(bucketName, placeholderPath, new ByteArrayInputStream(new byte[0]), 0);
+        createPlaceholder(fullPath);
         log.info("Created new folder with path {}", fullPath);
     }
 
     public void initializeBaseFolder(long userId) {
         String basePath = PathUtil.getFullPath(userId, "");
-        String placeholderPath = basePath + PLACEHOLDER;
         if (!minioRepository.isObjectExists(bucketName, basePath, false)) {
-            minioRepository.createFolder(bucketName, placeholderPath, new ByteArrayInputStream(new byte[0]), 0);
+            createPlaceholder(basePath);
             log.info("Created base folder for user with id {}", userId);
         }
     }
@@ -98,6 +96,20 @@ public class FolderService {
                 .filter(folder -> PathUtil.isValidDestinationFolder(folder.path(), excludedFolderPath))
                 .distinct()
                 .collect(Collectors.toList());
+    }
+
+    public void initializeEmptyFolders(String path){
+        String parentPath = PathUtil.getParentPath(path);
+        String placeholderPath = parentPath + PLACEHOLDER;
+        if(!minioRepository.isObjectExists(bucketName, placeholderPath, false)){
+            createPlaceholder(parentPath);
+            initializeEmptyFolders(parentPath);
+        }
+    }
+
+    private void createPlaceholder(String basePath) {
+        String placeholderPath = basePath + PLACEHOLDER;
+        minioRepository.createFolder(bucketName, placeholderPath, new ByteArrayInputStream(new byte[0]), 0);
     }
 
 }

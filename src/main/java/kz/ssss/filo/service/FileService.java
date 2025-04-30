@@ -37,8 +37,9 @@ public class FileService {
 
         String fullPath = PathUtil.getFullPath(userId, path + file.getOriginalFilename());
         if (minioRepository.isObjectExists(bucketName, fullPath, false)) {
-            throw new DuplicateResourceException("file with such name already exists!");
+            throw new DuplicateResourceException("folder or file with name %s already exists!".formatted(PathUtil.getName(fullPath)));
         }
+        folderService.initializeEmptyFolders(fullPath);
 
         try {
             minioRepository.save(bucketName, fullPath, file.getInputStream(), file.getSize(), file.getContentType());
