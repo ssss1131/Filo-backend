@@ -4,6 +4,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import kz.ssss.filo.dto.request.SignInRequest;
 import kz.ssss.filo.dto.request.SignUpRequest;
+import kz.ssss.filo.dto.response.SignUpResponse;
 import kz.ssss.filo.dto.response.UserInfoResponse;
 import kz.ssss.filo.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -31,7 +32,8 @@ public class AuthController {
     public ResponseEntity<?> registration(@Valid @RequestBody SignUpRequest user) {
         userService.save(user.username(), user.password());
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(user.username());
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(new SignUpResponse(user.username()));
     }
 
 }
