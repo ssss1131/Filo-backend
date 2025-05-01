@@ -18,7 +18,7 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
-import static kz.ssss.filo.util.SecurityUtil.getAuthenticatedUserId;
+import static kz.ssss.filo.util.SecurityUtil.getCurrentUser;
 import static org.springframework.http.HttpHeaders.CONTENT_DISPOSITION;
 import static org.springframework.http.HttpStatus.CREATED;
 import static org.springframework.http.HttpStatus.NO_CONTENT;
@@ -32,73 +32,74 @@ public class ResourceController {
     private final FolderService folderService;
     private final ResourceService resourceService;
 
-    @GetMapping
-    public ResponseEntity<?> getFiles(@RequestParam(name = "path", required = false, defaultValue = "") String path) {
-        return ResponseEntity.ok(resourceService.getResourcesInFolder(getAuthenticatedUserId(), path));
-    }
+//    @GetMapping
+//    public ResponseEntity<?> getFiles(@RequestParam(name = "path", required = false, defaultValue = "") String path) {
+//        return ResponseEntity.ok(resourceService.getResourcesInFolder(getCurrentUser(), path));
+//    }
 
     @PostMapping
     public ResponseEntity<?> uploadFile(@RequestParam(name = "path", required = false, defaultValue = "") String path,
                                         @RequestParam("files") List<MultipartFile> files) {
-        files.forEach(file ->
-                fileService.upload(getAuthenticatedUserId(), path, file)
-        );
-        return ResponseEntity
-                .status(CREATED)
-                .body(resourceService.getResourcesInFolder(getAuthenticatedUserId(), path));
+//        files.forEach(file ->
+//                fileService.upload(getCurrentUser(), path, file)
+//        );
+//        return ResponseEntity
+//                .status(CREATED)
+//                .body(resourceService.getResourcesInFolder(getCurrentUser(), path));
+        return null;
     }
-
-    @DeleteMapping
-    public ResponseEntity<?> delete(@RequestParam(name = "path") String path) {
-        resourceService.delete(getAuthenticatedUserId(), path);
-        return ResponseEntity
-                .status(NO_CONTENT)
-                .build();
-    }
-
-    @GetMapping("/download")
-    public ResponseEntity<StreamingResponseBody> download(
-            @RequestParam(name = "path", required = false, defaultValue = "") String path) {
-
-        if (PathUtil.isFile(path)) {
-            Resource resource = fileService.downloadFile(getAuthenticatedUserId(), path);
-
-            StreamingResponseBody stream = outputStream -> {
-                try (InputStream is = resource.getInputStream()) {
-                    byte[] buffer = new byte[4096];
-                    int bytesRead;
-                    while ((bytesRead = is.read(buffer)) > 0) {
-                        outputStream.write(buffer, 0, bytesRead);
-                    }
-                }
-            };
-            String encodedFileName = URLEncoder.encode(PathUtil.getName(path), StandardCharsets.UTF_8);
-            String contentDisposition = "attachment; filename*=UTF-8''" + encodedFileName;
-
-            return ResponseEntity.ok()
-                    .header(CONTENT_DISPOSITION, contentDisposition)
-                    .contentType(MediaType.APPLICATION_OCTET_STREAM)
-                    .body(stream);
-
-        } else {
-            StreamingResponseBody stream = outputStream ->
-                    folderService.downloadFolder(getAuthenticatedUserId(), path, outputStream);
-
-            String folderName = PathUtil.getName(path) + ".zip";
-            String encodedFolderName = URLEncoder.encode(folderName, StandardCharsets.UTF_8);
-            String contentDisposition = "attachment; filename*=UTF-8''" + encodedFolderName;
-            return ResponseEntity.ok()
-                    .header(CONTENT_DISPOSITION, contentDisposition)
-                    .contentType(MediaType.valueOf("application/zip"))
-                    .body(stream);
-        }
-    }
-
-    @GetMapping("/move")
-    public ResponseEntity<?> move(@RequestParam(name = "from") String from, @RequestParam(name = "to") String to){
-        List<ObjectsInfoResponse> resources = resourceService.move(getAuthenticatedUserId(), from, to);
-        return ResponseEntity.ok()
-                .body(resources);
-    }
+//
+//    @DeleteMapping
+//    public ResponseEntity<?> delete(@RequestParam(name = "path") String path) {
+//        resourceService.delete(getCurrentUser(), path);
+//        return ResponseEntity
+//                .status(NO_CONTENT)
+//                .build();
+//    }
+//
+//    @GetMapping("/download")
+//    public ResponseEntity<StreamingResponseBody> download(
+//            @RequestParam(name = "path", required = false, defaultValue = "") String path) {
+//
+//        if (PathUtil.isFile(path)) {
+//            Resource resource = fileService.downloadFile(getCurrentUser(), path);
+//
+//            StreamingResponseBody stream = outputStream -> {
+//                try (InputStream is = resource.getInputStream()) {
+//                    byte[] buffer = new byte[4096];
+//                    int bytesRead;
+//                    while ((bytesRead = is.read(buffer)) > 0) {
+//                        outputStream.write(buffer, 0, bytesRead);
+//                    }
+//                }
+//            };
+//            String encodedFileName = URLEncoder.encode(PathUtil.getName(path), StandardCharsets.UTF_8);
+//            String contentDisposition = "attachment; filename*=UTF-8''" + encodedFileName;
+//
+//            return ResponseEntity.ok()
+//                    .header(CONTENT_DISPOSITION, contentDisposition)
+//                    .contentType(MediaType.APPLICATION_OCTET_STREAM)
+//                    .body(stream);
+//
+//        } else {
+//            StreamingResponseBody stream = outputStream ->
+//                    folderService.downloadFolder(getCurrentUser(), path, outputStream);
+//
+//            String folderName = PathUtil.getName(path) + ".zip";
+//            String encodedFolderName = URLEncoder.encode(folderName, StandardCharsets.UTF_8);
+//            String contentDisposition = "attachment; filename*=UTF-8''" + encodedFolderName;
+//            return ResponseEntity.ok()
+//                    .header(CONTENT_DISPOSITION, contentDisposition)
+//                    .contentType(MediaType.valueOf("application/zip"))
+//                    .body(stream);
+//        }
+//    }
+//
+//    @GetMapping("/move")
+//    public ResponseEntity<?> move(@RequestParam(name = "from") String from, @RequestParam(name = "to") String to){
+//        List<ObjectsInfoResponse> resources = resourceService.move(getCurrentUser(), from, to);
+//        return ResponseEntity.ok()
+//                .body(resources);
+//    }
 
 }

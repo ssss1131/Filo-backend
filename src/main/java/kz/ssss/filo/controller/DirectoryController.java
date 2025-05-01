@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-import static kz.ssss.filo.util.SecurityUtil.getAuthenticatedUserId;
+import static kz.ssss.filo.util.SecurityUtil.getCurrentUser;
 
 @RequiredArgsConstructor
 @RequestMapping("/api/directory")
@@ -19,18 +19,18 @@ public class DirectoryController {
 
     private final FolderService folderService;
 
-    @PostMapping
-    public ResponseEntity<?> createFolder(@RequestParam(name = "path") String path) {
-        folderService.createFolder(getAuthenticatedUserId(), path);
-        return ResponseEntity.ok().body(new CreateDirectoryResponse(PathUtil.getPath(path),
-                PathUtil.getName(path)));
-    }
-
-    @GetMapping("/available")
-    public ResponseEntity<?> availableFolders(@RequestParam(name = "path") String path) {
-        List<FolderInfoResponse> folders = folderService.getAvailableDestinationFolders(getAuthenticatedUserId(), path);
-        return ResponseEntity.ok().body(folders);
-
-    }
+//    @PostMapping
+//    public ResponseEntity<?> createFolder(@RequestParam(name = "path") String path) {
+//        folderService.createFolder(getCurrentUser(), path);
+//        return ResponseEntity.ok().body(new CreateDirectoryResponse(PathUtil.getPath(path),
+//                PathUtil.getName(path)));
+//    }
+//
+//    @GetMapping("/available")
+//    public ResponseEntity<?> availableFolders(@RequestParam(name = "path") String path) {
+//        List<FolderInfoResponse> folders = folderService.getAvailableDestinationFolders(getCurrentUser(), path);
+//        return ResponseEntity.ok().body(folders);
+//
+//    }
 
 }

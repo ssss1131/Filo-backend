@@ -89,14 +89,14 @@ public class FolderService {
         }
     }
 
-    public List<FolderInfoResponse> getAvailableDestinationFolders(long userId, String excludedFolderPath) {
-        List<ObjectsInfoResponse> allFolders = resourceService.getResources(userId, "", true, true);
-        return allFolders.stream()
-                .map(folder -> new FolderInfoResponse(PathUtil.getPath(folder.path())))
-                .filter(folder -> PathUtil.isValidDestinationFolder(folder.path(), excludedFolderPath))
-                .distinct()
-                .collect(Collectors.toList());
-    }
+//    public List<FolderInfoResponse> getAvailableDestinationFolders(long userId, String excludedFolderPath) {
+//        List<ObjectsInfoResponse> allFolders = resourceService.getResources(userId, "", true, true);
+//        return allFolders.stream()
+//                .map(folder -> new FolderInfoResponse(PathUtil.getPath(folder.path())))
+//                .filter(folder -> PathUtil.isValidDestinationFolder(folder.path(), excludedFolderPath))
+//                .distinct()
+//                .collect(Collectors.toList());
+//    }
 
     public void initializeEmptyFolders(String path){
         String parentPath = PathUtil.getParentPath(path);

@@ -1,9 +1,7 @@
 package kz.ssss.filo.dto.request;
 
-public record SignInRequest(
+public record CreateUserRequest(
         String username,
         String password,
-        String tenant
-){
-
-}
+        String role
+) { }

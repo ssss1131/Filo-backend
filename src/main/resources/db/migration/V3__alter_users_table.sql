@@ -1,0 +1,31 @@
+CREATE TYPE user_role AS ENUM (
+  'SUPER_ADMIN',
+  'TENANT_ADMIN',
+  'TENANT_USER'
+);
+
+
+ALTER TABLE users
+  DROP CONSTRAINT IF EXISTS users_username_key;
+
+ALTER TABLE users
+  ALTER COLUMN id TYPE BIGINT;
+
+ALTER SEQUENCE users_id_seq AS BIGINT;
+
+
+
+ALTER TABLE users
+  ADD COLUMN tenant_id UUID;
+
+ALTER TABLE users
+  ADD CONSTRAINT fk_users_tenant
+    FOREIGN KEY (tenant_id)
+      REFERENCES tenant(id)
+        ON DELETE CASCADE;
+
+ALTER TABLE users
+  ADD COLUMN created_at TIMESTAMPTZ NOT NULL DEFAULT NOW();
+
+ALTER TABLE users
+  ADD COLUMN role user_role NOT NULL DEFAULT 'TENANT_USER';
