@@ -71,6 +71,16 @@ public class ResourceService {
         deleteInternal(userId, path, true);
     }
 
+    public List<ObjectsInfoResponse> search(long userId, String query) {
+        String finalQuery = query == null ? "" : query.trim();
+        if (finalQuery.isEmpty()) {
+            return List.of();
+        }
+        return getResources(userId, "", true, false)
+                .stream()
+                .filter(resource -> resource.name().toLowerCase().contains(finalQuery.toLowerCase()))
+                .toList();
+    }
 
     private void deleteInternal(long userId, String path, boolean updateQuota) {
         String fullPath = PathUtil.getFullPath(userId, path);
@@ -81,7 +91,7 @@ public class ResourceService {
                 .toList();
         minioRepository.removeObjects(bucketName, objectsToDelete);
 
-        if(updateQuota){
+        if (updateQuota) {
             items.forEach(item -> userQuotaService.changeUsedSpaceOnDelete(userId, item.size()));
         }
 

@@ -114,4 +114,10 @@ public class ResourceController {
                 .body(resources);
     }
 
+    @GetMapping("/search")
+    public ResponseEntity<?> search(@RequestParam(name = "query") String query){
+        List<?> result = resourceService.search(getAuthenticatedUserId(), query);
+        return ResponseEntity.ok().body(result);
+    }
+
 }
