@@ -31,18 +31,18 @@ All your data is stored in MinIO (S3-compatible), metadata in PostgreSQL, and se
 
 ### Frontend  
 <p float="left">
-  <img src="https://img.shields.io/badge/Angular-red?logo=angular" alt="Angular" height="28px"/>
-  <img src="https://img.shields.io/badge/TypeScript-red?logo=typescript" alt="TypeScript" height="28px"/>
-  <img src="https://img.shields.io/badge/RxJS-red?logo=rxjs" alt="RxJS" height="28px"/>
-  <img src="https://img.shields.io/badge/HTML5-ored?logo=html5" alt="HTML5" height="28px"/>
-  <img src="https://img.shields.io/badge/CSS3-red?logo=css3" alt="CSS3" height="28px"/>
+  <img src="https://img.shields.io/badge/Angular-black?logo=angular" alt="Angular" height="28px"/>
+  <img src="https://img.shields.io/badge/TypeScript-black?logo=typescript" alt="TypeScript" height="28px"/>
+  <img src="https://img.shields.io/badge/RxJS-black?logo=rxjs" alt="RxJS" height="28px"/>
+  <img src="https://img.shields.io/badge/HTML5-black?logo=html5" alt="HTML5" height="28px"/>
+  <img src="https://img.shields.io/badge/CSS3-black?logo=css3" alt="CSS3" height="28px"/>
 </p>
 
 ### Deployment  
 <p float="left">
-  <img src="https://img.shields.io/badge/Docker-blue?logo=docker" alt="Docker" height="28px"/>
-  <img src="https://img.shields.io/badge/Docker–Compose-blue?logo=docker" alt="Docker Compose" height="28px"/>
-  <img src="https://img.shields.io/badge/Nginx-blue?logo=nginx" alt="Nginx" height="28px"/>
+  <img src="https://img.shields.io/badge/Docker-black?logo=docker" alt="Docker" height="28px"/>
+  <img src="https://img.shields.io/badge/Docker–Compose-black?logo=docker" alt="Docker Compose" height="28px"/>
+  <img src="https://img.shields.io/badge/Nginx-black?logo=nginx" alt="Nginx" height="28px"/>
 </p>
 
 
