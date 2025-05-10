@@ -91,10 +91,15 @@ public class FolderService {
 
     public List<FolderInfoResponse> getAvailableDestinationFolders(long userId, String excludedFolderPath) {
         List<ObjectsInfoResponse> allFolders = resourceService.getResources(userId, "", true, true);
+        String objectName = PathUtil.getName(excludedFolderPath);
         return allFolders.stream()
-                .map(folder -> new FolderInfoResponse(PathUtil.getPath(folder.path())))
+                .map(folder -> new FolderInfoResponse(getPath(folder.path())))
                 .filter(folder -> PathUtil.isValidDestinationFolder(folder.path(), excludedFolderPath))
                 .distinct()
+                .filter(folder -> {
+                    String fullPath = PathUtil.getFullPath(userId, folder.path() + objectName);
+                    return !minioRepository.isObjectExists(bucketName, fullPath, false);
+                })
                 .collect(Collectors.toList());
     }
 
