@@ -1,9 +1,11 @@
 package kz.ssss.filo.controller;
 
 import kz.ssss.filo.dto.response.ObjectsInfoResponse;
+import kz.ssss.filo.exception.QuotaExceededException;
 import kz.ssss.filo.service.FileService;
 import kz.ssss.filo.service.FolderService;
 import kz.ssss.filo.service.ResourceService;
+import kz.ssss.filo.service.UserQuotaService;
 import kz.ssss.filo.util.PathUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.Resource;
@@ -31,6 +33,7 @@ public class ResourceController {
     private final FileService fileService;
     private final FolderService folderService;
     private final ResourceService resourceService;
+    private final UserQuotaService userQuotaService;
 
     @GetMapping
     public ResponseEntity<?> getFiles(@RequestParam(name = "path", required = false, defaultValue = "") String path) {
@@ -40,12 +43,22 @@ public class ResourceController {
     @PostMapping
     public ResponseEntity<?> uploadFile(@RequestParam(name = "path", required = false, defaultValue = "") String path,
                                         @RequestParam("files") List<MultipartFile> files) {
+
+        Long userId = getAuthenticatedUserId();
+
+        long totalNewBytes = files.stream()
+                .mapToLong(MultipartFile::getSize)
+                .sum();
+        if (userQuotaService.willExceedQuota(userId, totalNewBytes)) {
+            throw new QuotaExceededException("Quota exceeded");
+        }
+
         files.forEach(file ->
-                fileService.upload(getAuthenticatedUserId(), path, file)
+                fileService.upload(userId, path, file)
         );
         return ResponseEntity
                 .status(CREATED)
-                .body(resourceService.getResourcesInFolder(getAuthenticatedUserId(), path));
+                .body(resourceService.getResourcesInFolder(userId, path));
     }
 
     @DeleteMapping

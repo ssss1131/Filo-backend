@@ -86,6 +86,13 @@ public class GlobalExceptionHandler {
         return new ErrorResponse(e.getMessage());
     }
 
+    @ResponseStatus(HttpStatus.PAYLOAD_TOO_LARGE)
+    @ExceptionHandler(QuotaExceededException.class)
+    @ResponseBody
+    public ErrorResponse handleQuotaExceededException(QuotaExceededException e){
+        return new ErrorResponse(e.getMessage());
+    }
+
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ExceptionHandler(Exception.class)
     @ResponseBody

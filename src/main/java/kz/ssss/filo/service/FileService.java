@@ -23,6 +23,7 @@ public class FileService {
 
     private final MinioRepository minioRepository;
     private final FolderService folderService;
+    private final UserQuotaService userQuotaService;
     private final ObjectsInfoMapper mapper;
 
     @Value("${minio.bucket-name}")
@@ -39,7 +40,6 @@ public class FileService {
         if (minioRepository.isObjectExists(bucketName, fullPath, false)) {
             throw new DuplicateResourceException("folder or file with name %s already exists!".formatted(PathUtil.getName(fullPath)));
         }
-        folderService.initializeEmptyFolders(fullPath);
 
         try {
             minioRepository.save(bucketName, fullPath, file.getInputStream(), file.getSize(), file.getContentType());
@@ -48,6 +48,9 @@ public class FileService {
             log.error("Occurred exception while getting input stream of file ", e);
             throw new StorageOperationException("Error accessing file stream for " + file.getOriginalFilename(), e);
         }
+        folderService.initializeEmptyFolders(fullPath);
+        userQuotaService.changeUsedSpaceOnUpload(userId, file.getSize());
+
     }
 
     public Resource downloadFile(long userId, String path) {
