@@ -4,6 +4,7 @@ import kz.ssss.filo.dto.response.ErrorResponse;
 import kz.ssss.filo.dto.response.ValidationErrorResponse;
 import kz.ssss.filo.exception.auth.UniqueUsernameException;
 import kz.ssss.filo.exception.minio.DuplicateResourceException;
+import kz.ssss.filo.exception.minio.InvalidPathException;
 import kz.ssss.filo.exception.minio.ResourceNotFoundException;
 import kz.ssss.filo.exception.minio.StorageOperationException;
 import lombok.extern.slf4j.Slf4j;
@@ -90,6 +91,13 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(QuotaExceededException.class)
     @ResponseBody
     public ErrorResponse handleQuotaExceededException(QuotaExceededException e){
+        return new ErrorResponse(e.getMessage());
+    }
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(InvalidPathException.class)
+    @ResponseBody
+    public ErrorResponse handleInvalidPathException(InvalidPathException e){
         return new ErrorResponse(e.getMessage());
     }
 
