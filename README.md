@@ -11,7 +11,8 @@ Filo is a web-based cloud file storage application. Registered users can:
 - **Search** by filename  
 - **Track storage quota** with live progress bar  
 
-All your data is stored in MinIO (S3-compatible), metadata in PostgreSQL, and sessions in Redis.
+All your data is stored in MinIO (S3-compatible), metadata in PostgreSQL, and sessions in Redis.<br>
+Frontend of this application is - https://github.com/ssss1131/Filo-frontend
 
 ---
 
@@ -29,20 +30,42 @@ All your data is stored in MinIO (S3-compatible), metadata in PostgreSQL, and se
   <img src="https://img.shields.io/badge/Flyway-DB-black?logo=flyway" alt="Flyway" height="28px"/>
 </p>
 
-### Frontend  
-<p float="left">
-  <img src="https://img.shields.io/badge/Angular-black?logo=angular" alt="Angular" height="28px"/>
-  <img src="https://img.shields.io/badge/TypeScript-black?logo=typescript" alt="TypeScript" height="28px"/>
-  <img src="https://img.shields.io/badge/RxJS-black?logo=rxjs" alt="RxJS" height="28px"/>
-  <img src="https://img.shields.io/badge/HTML5-black?logo=html5" alt="HTML5" height="28px"/>
-  <img src="https://img.shields.io/badge/CSS3-black?logo=css3" alt="CSS3" height="28px"/>
-</p>
-
 ### Deployment  
 <p float="left">
   <img src="https://img.shields.io/badge/Docker-black?logo=docker" alt="Docker" height="28px"/>
   <img src="https://img.shields.io/badge/Docker–Compose-black?logo=docker" alt="Docker Compose" height="28px"/>
   <img src="https://img.shields.io/badge/Nginx-black?logo=nginx" alt="Nginx" height="28px"/>
 </p>
+
+## Requirements
+- Java 17+
+- Docker, Docker-compose
+- Git
+
+## Local setup
+
+1. Clone the repository:
+```bash
+git clone https://github.com/ssss1131/Filo-backend
+cd Filo-backend
+```
+
+2. Start the required services using Docker Compose:
+```bash
+docker-compose up -d
+```
+This will start:
+- PostgreSQL database (port 5433)
+- Redis server (port 6379)
+- MinIO object storage (ports 9000 and 9090)
+
+3. Build and run the Spring Boot application:
+```bash
+./gradlew bootRun
+```
+
+The backend will start on the default port 8080.
+
+Frontend setup you can read in https://github.com/ssss1131/Filo-frontend
 
 
