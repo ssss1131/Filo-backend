@@ -35,12 +35,14 @@ public class ResourceService {
             log.info("Invalid path is {}", path);
             throw new InvalidPathException("Path is empty or incorrect");
         }
+
         String fullPath = PathUtil.getFullPath(userId, path);
         List<Item> items = minioRepository.listObjects(bucketName, fullPath, isRecursive);
         if (items.isEmpty()) {
             log.info("The resource on the {} was not found", path);
             throw new ResourceNotFoundException("The resource on the specified path was not found");
         }
+
         return items.stream()
                 .map(item -> mapper.toDto(item, userId))
                 .filter(item -> havePlaceholders || !PathUtil.getName(item.name()).equals(PLACEHOLDER))
@@ -76,6 +78,7 @@ public class ResourceService {
         if (finalQuery.isEmpty()) {
             return List.of();
         }
+
         return getResources(userId, "", true, false)
                 .stream()
                 .filter(resource -> resource.name().toLowerCase().contains(finalQuery.toLowerCase()))

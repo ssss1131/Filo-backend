@@ -78,7 +78,6 @@ public class MinioRepository {
                             .recursive(isRecursive)
                             .build()
             );
-
             List<Item> items = new ArrayList<>();
             for (Result<Item> result : results) {
                 items.add(result.get());
@@ -86,6 +85,7 @@ public class MinioRepository {
             return items;
 
         } catch (Exception e) {
+            log.error("Failed to list objects with prefix {}", prefix);
             throw new StorageOperationException("Failed to list objects", e);
         }
     }
@@ -119,6 +119,19 @@ public class MinioRepository {
         } catch (Exception e){
             log.error("Exception while copying from {} elements to {}", from, to, e);
             throw new StorageOperationException("Exception while copying elements", e);
+        }
+    }
+
+    public void createBucket(String bucket){
+        try {
+            boolean bucketExists = minioClient.bucketExists(BucketExistsArgs.builder().bucket(bucket).build());
+            if(!bucketExists){
+                minioClient.makeBucket(MakeBucketArgs.builder().bucket(bucket).build());
+                log.info("Bucket '{}' successfully created.", bucket);
+            }
+        }  catch (Exception e) {
+            log.error("Error initializing MinIO bucket '{}'.", bucket, e);
+            throw new StorageOperationException("Error initializing MinIO bucket", e);
         }
     }
 }

@@ -1,7 +1,6 @@
 package kz.ssss.filo.model;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Min;
 import lombok.*;
 
 import java.io.Serial;

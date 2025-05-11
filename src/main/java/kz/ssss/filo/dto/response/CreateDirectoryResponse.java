@@ -9,7 +9,7 @@ public class CreateDirectoryResponse {
 
     String name;
 
-    final FileType type = FileType.FOLDER;
+    FileType type = FileType.FOLDER;
 
     public CreateDirectoryResponse(String path, String name) {
         this.path = path;

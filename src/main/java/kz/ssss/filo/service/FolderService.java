@@ -94,8 +94,8 @@ public class FolderService {
         String objectName = PathUtil.getName(excludedFolderPath);
         return allFolders.stream()
                 .map(folder -> new FolderInfoResponse(getPath(folder.path())))
-                .filter(folder -> PathUtil.isValidDestinationFolder(folder.path(), excludedFolderPath))
                 .distinct()
+                .filter(folder -> PathUtil.isValidDestinationFolder(folder.path(), excludedFolderPath))
                 .filter(folder -> {
                     String fullPath = PathUtil.getFullPath(userId, folder.path() + objectName);
                     return !minioRepository.isObjectExists(bucketName, fullPath, false);
