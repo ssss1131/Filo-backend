@@ -7,6 +7,7 @@ import kz.ssss.filo.exception.minio.DuplicateResourceException;
 import kz.ssss.filo.exception.minio.InvalidPathException;
 import kz.ssss.filo.exception.minio.ResourceNotFoundException;
 import kz.ssss.filo.exception.minio.StorageOperationException;
+import kz.ssss.filo.exception.quota.QuotaExceededException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;

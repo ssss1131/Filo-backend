@@ -28,7 +28,10 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers(BASE_AUTH_URL + LOGIN_ENDPOINT, BASE_AUTH_URL + REGISTER_ENDPOINT).permitAll()
+                        .requestMatchers(
+                                BASE_AUTH_URL + LOGIN_ENDPOINT,
+                                BASE_AUTH_URL + REGISTER_ENDPOINT,
+                                "/swagger-ui/**", "/swagger-ui.html**", "/v3/api-docs/**").permitAll()
                         .anyRequest().authenticated())
                 .logout(logout -> logout
                         .logoutUrl(FULL_LOGOUT_URL)

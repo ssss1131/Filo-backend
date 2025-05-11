@@ -1,4 +1,4 @@
-package kz.ssss.filo.exception;
+package kz.ssss.filo.exception.quota;
 
 public class QuotaExceededException extends RuntimeException {
 
